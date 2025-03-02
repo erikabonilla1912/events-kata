@@ -1,0 +1,32 @@
+<div class="event-form">
+    <h2>Registrar Evento</h2>
+    <form [formGroup]="eventForm" (ngSubmit)="onSubmit()">
+      <div>
+        <label for="name">Nombre del evento:</label>
+        <input id="name" formControlName="name" type="text" placeholder="Nombre del evento" />
+      </div>
+  
+      <div>
+        <label for="date">Fecha:</label>
+        <input id="date" formControlName="date" type="text" placeholder="DD/MM/AAAA" />
+      </div>
+
+      <div>
+        <label for="time">Hora:</label>
+        <input id="time" formControlName="time" type="text" placeholder="HH:MM"/>
+      </div>
+
+      <div>
+        <label for="location">Ubicación:</label>
+        <input id="location" formControlName="location" type="text" placeholder="Ubicación" />
+      </div>
+
+      <div>
+        <label for="description">Descripción:</label>
+        <textarea id="description" formControlName="description" placeholder="Escribe una breve descripción"></textarea>
+      </div>
+
+      <button type="submit" [disabled]="eventForm.invalid">Guardar Evento</button>
+    </form>
+  </div>
+  

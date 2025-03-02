@@ -1,0 +1,30 @@
+<div class="container">
+  <header>
+    <h1>Gestión de Eventos</h1>
+    <button *ngIf="showEvents" class="logout" (click)="logout()">Cerrar sesión</button>
+  </header>
+</div>
+
+<div *ngIf="!showEvents" class="start-screen">
+  <div class="text-container">
+    <h2>Bienvenido a la Gestión de Eventos</h2>
+    <p>Organiza y administra tus eventos de manera eficiente.</p>
+    <button class="start-btn" (click)="start()">Iniciar</button>
+  </div>
+  <div class="image-container">
+    <img src="event.jpg" alt="Gestión de Eventos" class="start-image">
+  </div>
+</div>
+
+<div *ngIf="showEvents" class="event-wrapper">
+  <div class="event-form">
+    <app-event-form></app-event-form>
+  </div>
+  <div class="event-list">
+    <app-event-list></app-event-list>
+  </div>
+</div>
+
+<footer>
+  <p>© 2025 Gestión de Eventos. Todos los derechos reservados.</p>
+</footer>

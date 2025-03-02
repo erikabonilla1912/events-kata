@@ -1,0 +1,22 @@
+<div class="event-edit">
+    <h2>Editar Evento</h2>
+    <form (ngSubmit)="updateEvent()">
+      <label for="name">Nombre</label>
+      <input type="text" id="name" [(ngModel)]="event.name" name="name" required />
+  
+      <label for="date">Fecha</label>
+      <input type="date" id="date" [(ngModel)]="event.date" name="date" required />
+  
+      <label for="time">Hora</label>
+      <input type="time" id="time" [(ngModel)]="event.time" name="time" required />
+  
+      <label for="location">Ubicación</label>
+      <input type="text" id="location" [(ngModel)]="event.location" name="location" required />
+  
+      <label for="description">Descripción</label>
+      <textarea id="description" [(ngModel)]="event.description" name="description" required></textarea>
+  
+      <button type="submit">Actualizar Evento</button>
+    </form>
+  </div>
+  
