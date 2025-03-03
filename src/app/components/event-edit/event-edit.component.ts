@@ -27,14 +27,18 @@ export class EventEditComponent implements OnInit {
   }
 
   loadEvent(id: string): void {
+    console.log('Consultando evento con ID:', id);  // Verifica que el ID se pasa correctamente
     this.http.get<any>(`http://localhost:3006/events/${id}`)
       .subscribe(data => {
+        console.log('Evento cargado:', data);  // Revisa la respuesta en la consola
         this.event = {
           ...data,
           date: this.formatDate(data.date)
         };
+      }, error => {
+        console.error('Error al cargar el evento:', error);  // Muestra el error en la consola
       });
-  }
+  }  
   
   formatDate(isoDate: string): string {
     const date = new Date(isoDate);

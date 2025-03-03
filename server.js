@@ -4,14 +4,13 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 
-dotenv.config(); // Carga las variables de entorno desde el archivo .env
+dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Configuración de la base de datos
 const db = mysql.createConnection({
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
@@ -19,7 +18,6 @@ const db = mysql.createConnection({
   database: process.env.DB_NAME || 'events_db',
 });
 
-// Conectar a la base de datos
 db.connect(err => {
   if (err) {
     console.error('Error de conexión a la BD:', err);
@@ -32,8 +30,12 @@ const API_KEY = process.env.API_KEY;
 
 app.use((req, res, next) => {
   const apiKey = req.headers['x-api-key'];
+  if (!apiKey) {
+    return res.status(401).json({ message: 'API Key faltante' });
+  }
+
   if (apiKey !== API_KEY) {
-    return res.status(401).json({ message: 'API Key inválida o faltante' });
+    return res.status(403).json({ message: 'API Key invalida' });
   }
   next();
 });
@@ -51,6 +53,21 @@ app.get('/events', (req, res) => {
         time: event.time ? event.time.substring(0, 5) : '',
       }));
       res.json(formattedResults);
+    }
+  });
+});
+
+app.get('/events/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = 'SELECT * FROM events WHERE id = ?';
+  db.query(sql, [id], (err, result) => {
+    if (err) {
+      console.error('❌ Error al obtener el evento por ID:', err);
+      res.status(500).json({ error: 'Error al obtener el evento' });
+    } else if (result.length === 0) {
+      res.status(404).json({ message: 'Evento no encontrado' });
+    } else {
+      res.json(result[0]);
     }
   });
 });
