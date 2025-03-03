@@ -27,7 +27,7 @@ export class EventListComponent implements OnInit {
         this.events = data;
       });
   }
-
+    
   deleteEvent(id: number): void {
     if (confirm('¿Estás seguro de eliminar este evento?')) {
       this.http.delete(`http://localhost:3006/events/${id}`)

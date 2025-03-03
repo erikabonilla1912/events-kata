@@ -29,9 +29,21 @@ export class EventEditComponent implements OnInit {
   loadEvent(id: string): void {
     this.http.get<any>(`http://localhost:3006/events/${id}`)
       .subscribe(data => {
-        this.event = data;
+        this.event = {
+          ...data,
+          date: this.formatDate(data.date)
+        };
       });
   }
+  
+  formatDate(isoDate: string): string {
+    const date = new Date(isoDate);
+    const year = date.getFullYear();
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const day = ('0' + date.getDate()).slice(-2);
+    return `${year}-${month}-${day}`;
+  }
+  
 
   updateEvent(): void {
     const { name, date, time, location, description } = this.event;
