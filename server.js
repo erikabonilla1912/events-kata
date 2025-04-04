@@ -11,6 +11,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Conexión a la base de datos
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -20,14 +21,16 @@ const db = mysql.createConnection({
 
 db.connect(err => {
   if (err) {
-    console.error('Error de conexión a la BD:', err);
+    console.error('❌ Error de conexión a la BD:', err);
+    process.exit(1); // Detener el servidor si no puede conectar con la base de datos
   } else {
     console.log('✅ Conectado a la base de datos MySQL');
   }
 });
 
-const API_KEY = process.env.API_KEY; 
+const API_KEY = process.env.API_KEY;
 
+// Middleware para validar la API Key
 app.use((req, res, next) => {
   const apiKey = req.headers['x-api-key'];
   if (!apiKey) {
@@ -35,92 +38,113 @@ app.use((req, res, next) => {
   }
 
   if (apiKey !== API_KEY) {
-    return res.status(403).json({ message: 'API Key invalida' });
+    return res.status(403).json({ message: 'API Key inválida' });
   }
   next();
 });
 
+// Obtener todos los eventos
 app.get('/events', (req, res) => {
   const sql = 'SELECT * FROM events';
   db.query(sql, (err, results) => {
     if (err) {
       console.error('❌ Error al obtener los eventos:', err);
-      res.status(500).json({ error: 'Error al obtener eventos' });
-    } else {
-      const formattedResults = results.map(event => ({
-        ...event,
-        date: new Date(event.date).toISOString().split('T')[0],
-        time: event.time ? event.time.substring(0, 5) : '',
-      }));
-      res.json(formattedResults);
+      return res.status(500).json({ error: 'Error al obtener eventos' });
     }
+    const formattedResults = results.map(event => ({
+      ...event,
+      birthDate: formatDate(event.birthDate),
+    }));
+    res.json(formattedResults);
   });
 });
 
+// Obtener evento por ID
 app.get('/events/:id', (req, res) => {
   const { id } = req.params;
   const sql = 'SELECT * FROM events WHERE id = ?';
   db.query(sql, [id], (err, result) => {
     if (err) {
       console.error('❌ Error al obtener el evento por ID:', err);
-      res.status(500).json({ error: 'Error al obtener el evento' });
-    } else if (result.length === 0) {
-      res.status(404).json({ message: 'Evento no encontrado' });
-    } else {
-      res.json(result[0]);
+      return res.status(500).json({ error: 'Error al obtener el evento' });
     }
+    if (result.length === 0) {
+      return res.status(404).json({ message: 'Evento no encontrado' });
+    }
+    res.json({ ...result[0], birthDate: formatDate(result[0].birthDate) });
   });
 });
 
+// Crear un nuevo evento
 app.post('/events', (req, res) => {
   console.log('Datos recibidos:', req.body);
-  const { name, date, time, location, description } = req.body;
-  const formattedTime = time.length === 5 ? `${time}:00` : time;
+  const { firstName, lastName, identification, birthDate, address } = req.body;
 
-  const sql = 'INSERT INTO events (name, date, time, location, description) VALUES (?, ?, ?, ?, ?)';
-  db.query(sql, [name, date, formattedTime, location, description], (err, result) => {
+  // Validar campos de entrada
+  if (!firstName || !lastName || !identification || !birthDate || !address) {
+    return res.status(400).json({ error: 'Todos los campos son requeridos' });
+  }
+
+  const sql = 'INSERT INTO events (firstName, lastName, identification, birthDate, address) VALUES (?, ?, ?, ?, ?)';
+  db.query(sql, [firstName, lastName, identification, birthDate, address], (err, result) => {
     if (err) {
       console.error('❌ Error al guardar el evento:', err);
-      res.status(500).json({ error: 'Error al guardar el evento' });
-    } else {
-      res.status(201).json({ message: '✅ Evento guardado correctamente', id: result.insertId });
+      return res.status(500).json({ error: 'Error al guardar el evento' });
     }
+    res.status(201).json({ message: '✅ Evento guardado correctamente', id: result.insertId });
   });
 });
 
+// Actualizar un evento
 app.put('/events/:id', (req, res) => {
   const { id } = req.params;
-  const { name, date, time, location, description } = req.body;
-  const formattedTime = time.length === 5 ? `${time}:00` : time;
-  const sql = 'UPDATE events SET name = ?, date = ?, time = ?, location = ?, description = ? WHERE id = ?';
-  db.query(sql, [name, date, formattedTime, location, description, id], (err, result) => {
+  const { firstName, lastName, identification, birthDate, address } = req.body;
+
+  // Validar campos de entrada
+  if (!firstName || !lastName || !identification || !birthDate || !address) {
+    return res.status(400).json({ error: 'Todos los campos son requeridos' });
+  }
+
+  const sql = 'UPDATE events SET firstName = ?, lastName = ?, identification = ?, birthDate = ?, address = ? WHERE id = ?';
+  db.query(sql, [firstName, lastName, identification, birthDate, address, id], (err, result) => {
     if (err) {
       console.error('❌ Error al actualizar el evento:', err);
-      res.status(500).json({ error: 'Error al actualizar el evento' });
-    } else if (result.affectedRows === 0) {
-      res.status(404).json({ message: 'Evento no encontrado' });
-    } else {
-      res.json({ message: '✅ Evento actualizado correctamente' });
+      return res.status(500).json({ error: 'Error al actualizar el evento' });
     }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Evento no encontrado' });
+    }
+    res.json({ message: '✅ Evento actualizado correctamente' });
   });
 });
 
+// Eliminar un evento
 app.delete('/events/:id', (req, res) => {
   const { id } = req.params;
   const sql = 'DELETE FROM events WHERE id = ?';
   db.query(sql, [id], (err, result) => {
     if (err) {
       console.error('❌ Error al eliminar el evento:', err);
-      res.status(500).json({ error: 'Error al eliminar el evento' });
-    } else if (result.affectedRows === 0) {
-      res.status(404).json({ message: 'Evento no encontrado' });
-    } else {
-      res.json({ message: '✅ Evento eliminado correctamente' });
+      return res.status(500).json({ error: 'Error al eliminar el evento' });
     }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Evento no encontrado' });
+    }
+    res.json({ message: '✅ Evento eliminado correctamente' });
   });
 });
 
-const PORT = process.env.PORT || 3000;
+// Función para formatear la fecha en formato YYYY-MM-DD
+function formatDate(date) {
+  try {
+    return new Date(date).toISOString().split('T')[0];
+  } catch (err) {
+    console.error('❌ Error al formatear la fecha:', err);
+    return date; // Si la fecha es inválida, retornar la original
+  }
+}
+
+const PORT = process.env.PORT || 3006;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });

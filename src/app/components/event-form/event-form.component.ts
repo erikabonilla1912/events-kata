@@ -18,11 +18,11 @@ export class EventFormComponent {
 
   constructor(private fb: FormBuilder) {
     this.eventForm = this.fb.group({
-      name: ['', Validators.required],
-      date: ['', Validators.required],
-      time: ['', Validators.required],
-      location: ['', Validators.required],
-      description: ['', Validators.required]
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      identification: ['', [Validators.required, Validators.pattern(/^\d+$/)]],
+      birthDate: ['', Validators.required],
+      address: ['', Validators.required]
     });
   }
 
@@ -30,21 +30,16 @@ export class EventFormComponent {
     if (this.eventForm.valid) {
       const newEvent = this.eventForm.value;
       console.log('Datos del formulario:', newEvent);
-  
-      if (!newEvent.date || !newEvent.time) {
-        alert('Por favor, ingresa una fecha y hora válida');
-        return;
-      }
-  
+
       this.http.post('http://localhost:3006/events', newEvent)
-  .subscribe({
-    next: response => {
-      alert('Evento guardado con éxito!');
-      this.eventForm.reset();
-      this.eventCreated.emit();
-    },
-    error: err => console.error('Error al guardar evento:', err)
-    });
+        .subscribe({
+          next: response => {
+            alert('Registro guardado con éxito!');
+            this.eventForm.reset();
+            this.eventCreated.emit();
+          },
+          error: err => console.error('Error al guardar registro:', err)
+        });
     }
   }  
 }

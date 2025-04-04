@@ -1,32 +1,31 @@
 <div class="event-form">
-    <h2>Registrar Evento</h2>
-    <form [formGroup]="eventForm" (ngSubmit)="onSubmit()">
-      <div>
-        <label for="name">Nombre del evento:</label>
-        <input id="name" formControlName="name" type="text" placeholder="Nombre del evento" />
-      </div>
-  
-      <div>
-        <label for="date">Fecha:</label>
-        <input id="date" formControlName="date" type="date" />
-      </div>
-      
-      <div>
-        <label for="time">Hora:</label>
-        <input id="time" formControlName="time" type="time" />
-      </div>
+  <h2>Registro</h2>
+  <form [formGroup]="eventForm" (ngSubmit)="onSubmit()">
+    <div>
+      <label for="name">Nombres:</label>
+      <input id="name" formControlName="firstName" type="text" placeholder="Ingrese sus nombres" />
+    </div>
 
-      <div>
-        <label for="location">Ubicación:</label>
-        <input id="location" formControlName="location" type="text" placeholder="Ubicación" />
-      </div>
+    <div>
+      <label for="lastName">Apellidos:</label>
+      <input id="lastName" formControlName="lastName" type="text" placeholder="Ingrese sus apellidos" />
+    </div>
 
-      <div>
-        <label for="description">Descripción:</label>
-        <textarea id="description" formControlName="description" placeholder="Escribe una breve descripción"></textarea>
-      </div>
+    <div>
+      <label for="id">Identificación:</label>
+      <input id="id" formControlName="identification" type="number" placeholder="Número de identificación" />
+    </div>
+    
+    <div>
+      <label for="birthDate">Fecha de nacimiento:</label>
+      <input id="birthDate" formControlName="birthDate" type="date" />
+    </div>
 
-      <button type="submit" [disabled]="eventForm.invalid">Guardar Evento</button>
-    </form>
-  </div>
-  
+    <div>
+      <label for="address">Ubicación (Dirección y barrio):</label>
+      <input id="address" formControlName="address" type="text" placeholder="Dirección y barrio" />
+    </div>
+
+    <button type="submit" [disabled]="eventForm.invalid">Guardar Registro</button>
+  </form>
+</div>

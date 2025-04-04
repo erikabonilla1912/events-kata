@@ -1,28 +1,28 @@
 <div class="event-list">
-    <h2>Lista de Eventos</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Fecha</th>
-          <th>Hora</th>
-          <th>Ubicación</th>
-          <th>Descripción</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let event of events">
-          <td>{{ event.name }}</td>
-          <td>{{ event.date }}</td>
-          <td>{{ event.time }}</td>
-          <td>{{ event.location }}</td>
-          <td>{{ event.description }}</td>
-          <td>
-            <button class="edit-btn" (click)="editEvent(event.id)">Editar</button>
-            <button class="delete-btn" (click)="deleteEvent(event.id)">Eliminar</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <h2>Lista de registros</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Nombres</th>
+        <th>Apellidos</th>
+        <th>Identificación</th>
+        <th>Fecha de nacimiento</th>
+        <th>Ubicación</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let event of events">
+        <td>{{ event.firstName }}</td>
+        <td>{{ event.lastName }}</td>
+        <td>{{ event.identification }}</td>
+        <td>{{ event.birthDate }}</td>
+        <td>{{ event.address }}</td>
+        <td>
+          <button class="edit-btn" (click)="editEvent(event.id)">Editar</button>
+          <button class="delete-btn" (click)="deleteEvent(event.id)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

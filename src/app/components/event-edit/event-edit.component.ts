@@ -12,7 +12,14 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./event-edit.component.scss']
 })
 export class EventEditComponent implements OnInit {
-  event: any = { name: '', date: '', time: '', location: '', description: '' };
+  event: any = { 
+    firstName: '', 
+    lastName: '', 
+    identification: '', 
+    birthDate: '', 
+    address: ''
+  };
+
   private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -27,19 +34,19 @@ export class EventEditComponent implements OnInit {
   }
 
   loadEvent(id: string): void {
-    console.log('Consultando evento con ID:', id);  // Verifica que el ID se pasa correctamente
+    console.log('Consultando registro con ID:', id);  // Verifica que el ID se pasa correctamente
     this.http.get<any>(`http://localhost:3006/events/${id}`)
       .subscribe(data => {
-        console.log('Evento cargado:', data);  // Revisa la respuesta en la consola
+        console.log('Registro cargado:', data);  // Revisa la respuesta en la consola
         this.event = {
           ...data,
-          date: this.formatDate(data.date)
+          birthDate: this.formatDate(data.birthDate)
         };
       }, error => {
-        console.error('Error al cargar el evento:', error);  // Muestra el error en la consola
+        console.error('Error al cargar el registro:', error);  // Muestra el error en la consola
       });
-  }  
-  
+  }
+
   formatDate(isoDate: string): string {
     const date = new Date(isoDate);
     const year = date.getFullYear();
@@ -47,13 +54,12 @@ export class EventEditComponent implements OnInit {
     const day = ('0' + date.getDate()).slice(-2);
     return `${year}-${month}-${day}`;
   }
-  
 
   updateEvent(): void {
-    const { name, date, time, location, description } = this.event;
-    this.http.put(`http://localhost:3006/events/${this.event.id}`, { name, date, time, location, description })
+    const { firstName, lastName, identification, birthDate, address } = this.event;
+    this.http.put(`http://localhost:3006/events/${this.event.id}`, { firstName, lastName, identification, birthDate, address })
       .subscribe(() => {
-        alert('Evento actualizado');
+        alert('Registro actualizado');
         this.router.navigate(['/event-list']);
       });
   }
